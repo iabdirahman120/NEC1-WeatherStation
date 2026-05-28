@@ -9,29 +9,24 @@
     body {
       font-family: Georgia, 'Times New Roman', serif;
       font-size: 14px;
-      line-height: 1.65;
+      line-height: 1.7;
       color: #1a1a1a;
       max-width: 860px;
       margin: 0 auto;
-      padding: 48px 48px 80px;
+      padding: 52px 52px 80px;
     }
 
-    h1 {
-      font-size: 26px;
-      font-weight: bold;
-      margin-bottom: 4px;
-    }
+    h1 { font-size: 26px; margin-bottom: 4px; }
 
     .subtitle {
       font-size: 13px;
-      color: #555;
-      margin-bottom: 36px;
+      color: #666;
+      margin-bottom: 40px;
     }
 
     h2 {
       font-size: 19px;
-      font-weight: bold;
-      margin-top: 48px;
+      margin-top: 52px;
       margin-bottom: 14px;
       border-bottom: 1.5px solid #bbb;
       padding-bottom: 5px;
@@ -40,79 +35,95 @@
 
     h3 {
       font-size: 15px;
-      font-weight: bold;
-      margin-top: 28px;
+      margin-top: 30px;
       margin-bottom: 10px;
       page-break-after: avoid;
     }
 
-    p {
-      margin-bottom: 12px;
-    }
-
-    table {
-      border-collapse: collapse;
-      width: 100%;
-      margin: 14px 0 20px;
-      font-size: 13px;
-    }
-
-    th {
-      background: #eeeeee;
-      border: 1px solid #bbb;
-      padding: 7px 11px;
-      text-align: left;
-      font-family: 'Helvetica Neue', Arial, sans-serif;
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.03em;
-    }
-
-    td {
-      border: 1px solid #bbb;
-      padding: 7px 11px;
-      vertical-align: top;
-    }
-
-    tr:nth-child(even) td {
-      background: #f9f9f9;
-    }
+    p { margin-bottom: 12px; }
 
     code {
-      font-family: 'Courier New', Courier, monospace;
+      font-family: 'Courier New', monospace;
       background: #f0f0f0;
       padding: 1px 5px;
       border-radius: 2px;
       font-size: 12.5px;
     }
 
-    pre {
-      font-family: 'Courier New', Courier, monospace;
-      background: #f5f5f5;
-      border: 1px solid #d0d0d0;
-      padding: 14px 18px;
-      margin: 14px 0 20px;
-      font-size: 12px;
-      line-height: 1.55;
-      overflow-x: auto;
-      page-break-inside: avoid;
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 14px 0 22px;
+      font-size: 13px;
     }
+    th {
+      background: #eeeeee;
+      border: 1px solid #bbb;
+      padding: 7px 11px;
+      text-align: left;
+      font-family: Arial, sans-serif;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    td {
+      border: 1px solid #bbb;
+      padding: 7px 11px;
+      vertical-align: top;
+    }
+    tr:nth-child(even) td { background: #f9f9f9; }
 
     .diagram {
-      margin: 18px 0 24px;
+      margin: 20px 0 28px;
       page-break-inside: avoid;
     }
 
     .note {
       background: #f7f7f7;
-      border-left: 3px solid #888;
+      border-left: 3px solid #999;
       padding: 9px 14px;
-      margin: 14px 0;
+      margin: 14px 0 20px;
       font-size: 13px;
     }
 
+    /* Packet format boxes */
+    .packet {
+      display: flex;
+      border: 1.5px solid #bbb;
+      margin: 14px 0 22px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+    }
+    .packet-field {
+      border-right: 1.5px solid #bbb;
+      padding: 0;
+      text-align: center;
+      flex: 1;
+    }
+    .packet-field:last-child { border-right: none; }
+    .packet-field .fname {
+      background: #e8e8e8;
+      padding: 5px 8px;
+      font-weight: bold;
+      font-size: 11px;
+      letter-spacing: 0.03em;
+    }
+    .packet-field .ftype {
+      padding: 3px 8px;
+      font-size: 11px;
+      color: #555;
+      border-top: 1px solid #ddd;
+      border-bottom: 1px solid #ddd;
+      background: #fafafa;
+    }
+    .packet-field .fval {
+      padding: 5px 8px;
+      font-size: 11px;
+      color: #333;
+    }
+
     @media print {
-      body { padding: 24px 32px; }
+      body { padding: 24px 36px; }
       h2 { page-break-before: always; }
       h2:first-of-type { page-break-before: avoid; }
     }
@@ -124,514 +135,478 @@
 <p class="subtitle">WeatherStation &mdash; Java client/server system &nbsp;|&nbsp; VIA University College, S26</p>
 
 
-<!-- ============================================================ -->
+<!-- ======================================================= -->
 <h2>1. Systemoversigt</h2>
 
 <p>
-  Systemet består af én server og to klienter, der simulerer temperatursensorer.
-  Kommunikation foregår over tre protokoller: TCP til primær dataudveksling, UDP til alarmbeskeder og HTTP til dataindsigt via browser.
-  Kommunikation initieres af begge parter over TCP-forbindelsen.
+  Systemet består af én server og to klienter. Hver klient simulerer en temperaturmåler,
+  der sender vejrdata til serveren. Kommunikation foregår via tre protokoller:
+  TCP til den primære dataudveksling, UDP til alarmbeskeder og HTTP til dataindsigt via browser.
 </p>
 
 <div class="diagram">
-<svg width="780" height="300" xmlns="http://www.w3.org/2000/svg">
+<svg width="760" height="290" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
-      <polygon points="0 0, 8 3, 0 6" fill="#444"/>
+    <marker id="a" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0,8 3,0 6" fill="#444"/>
     </marker>
-    <marker id="arr2" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
-      <polygon points="0 0, 8 3, 0 6" fill="#777"/>
+    <marker id="b" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0,8 3,0 6" fill="#888"/>
     </marker>
   </defs>
 
   <!-- SENSOR-1 -->
-  <rect x="10" y="55" width="140" height="52" rx="4" fill="#dce8fb" stroke="#4a70c4" stroke-width="1.5"/>
-  <text x="80" y="77" text-anchor="middle" font-family="Georgia,serif" font-size="13" font-weight="bold" fill="#1a1a1a">WeatherClient</text>
-  <text x="80" y="95" text-anchor="middle" font-family="'Courier New',monospace" font-size="11" fill="#444">SENSOR-1</text>
+  <rect x="10" y="50" width="145" height="54" rx="4" fill="#dce8fb" stroke="#4a70c4" stroke-width="1.5"/>
+  <text x="82" y="72" text-anchor="middle" font-family="Georgia,serif" font-size="13" font-weight="bold">WeatherClient</text>
+  <text x="82" y="90" text-anchor="middle" font-family="'Courier New',monospace" font-size="11" fill="#555">SENSOR-1</text>
 
   <!-- SENSOR-2 -->
-  <rect x="10" y="185" width="140" height="52" rx="4" fill="#dce8fb" stroke="#4a70c4" stroke-width="1.5"/>
-  <text x="80" y="207" text-anchor="middle" font-family="Georgia,serif" font-size="13" font-weight="bold" fill="#1a1a1a">WeatherClient</text>
-  <text x="80" y="225" text-anchor="middle" font-family="'Courier New',monospace" font-size="11" fill="#444">SENSOR-2</text>
+  <rect x="10" y="178" width="145" height="54" rx="4" fill="#dce8fb" stroke="#4a70c4" stroke-width="1.5"/>
+  <text x="82" y="200" text-anchor="middle" font-family="Georgia,serif" font-size="13" font-weight="bold">WeatherClient</text>
+  <text x="82" y="218" text-anchor="middle" font-family="'Courier New',monospace" font-size="11" fill="#555">SENSOR-2</text>
 
   <!-- Server -->
-  <rect x="295" y="80" width="190" height="152" rx="4" fill="#e2f3e4" stroke="#388e3c" stroke-width="1.5"/>
-  <text x="390" y="104" text-anchor="middle" font-family="Georgia,serif" font-size="13" font-weight="bold" fill="#1a1a1a">Server</text>
-  <line x1="310" y1="110" x2="470" y2="110" stroke="#aaa" stroke-width="0.8"/>
-  <text x="390" y="127" text-anchor="middle" font-family="'Courier New',monospace" font-size="11" fill="#333">WeatherServer</text>
-  <text x="390" y="143" text-anchor="middle" font-family="'Courier New',monospace" font-size="11" fill="#333">ClientHandler (×n)</text>
-  <text x="390" y="159" text-anchor="middle" font-family="'Courier New',monospace" font-size="11" fill="#333">WeatherStorage</text>
-  <text x="390" y="175" text-anchor="middle" font-family="'Courier New',monospace" font-size="11" fill="#333">HttpServer</text>
-  <text x="390" y="191" text-anchor="middle" font-family="'Courier New',monospace" font-size="11" fill="#333">UdpAlarmSender</text>
-  <text x="390" y="207" text-anchor="middle" font-family="'Courier New',monospace" font-size="11" fill="#333">UdpAlarmReceiver</text>
+  <rect x="290" y="68" width="185" height="150" rx="4" fill="#e2f3e4" stroke="#388e3c" stroke-width="1.5"/>
+  <text x="382" y="91" text-anchor="middle" font-family="Georgia,serif" font-size="13" font-weight="bold">Server</text>
+  <line x1="305" y1="97" x2="460" y2="97" stroke="#aaa" stroke-width="0.8"/>
+  <text x="382" y="113" text-anchor="middle" font-family="'Courier New',monospace" font-size="11" fill="#444">WeatherServer</text>
+  <text x="382" y="129" text-anchor="middle" font-family="'Courier New',monospace" font-size="11" fill="#444">ClientHandler &#215;n</text>
+  <text x="382" y="145" text-anchor="middle" font-family="'Courier New',monospace" font-size="11" fill="#444">WeatherStorage</text>
+  <text x="382" y="161" text-anchor="middle" font-family="'Courier New',monospace" font-size="11" fill="#444">HttpServer</text>
+  <text x="382" y="177" text-anchor="middle" font-family="'Courier New',monospace" font-size="11" fill="#444">UdpAlarmReceiver</text>
+  <text x="382" y="193" text-anchor="middle" font-family="'Courier New',monospace" font-size="11" fill="#444">UdpAlarmSender</text>
 
-  <!-- TCP SENSOR-1 → Server -->
-  <line x1="150" y1="74" x2="295" y2="135" stroke="#4a70c4" stroke-width="1.5" marker-end="url(#arr)"/>
-  <text x="192" y="88" font-family="Georgia,serif" font-size="11" fill="#4a70c4">TCP :6000</text>
-  <text x="192" y="101" font-family="Georgia,serif" font-size="10" fill="#666">WeatherData</text>
+  <!-- TCP: SENSOR-1 <-> Server -->
+  <line x1="155" y1="70" x2="290" y2="120" stroke="#4a70c4" stroke-width="1.5" marker-end="url(#a)"/>
+  <line x1="290" y1="133" x2="155" y2="83" stroke="#888" stroke-width="1.2" stroke-dasharray="5,3" marker-end="url(#b)"/>
+  <text x="208" y="82" font-family="Georgia,serif" font-size="11" fill="#4a70c4" font-weight="bold">TCP :6000</text>
+  <text x="150" y="130" font-family="Georgia,serif" font-size="10" fill="#666">CONNECTED / ALARM</text>
 
-  <!-- TCP Server → SENSOR-1 (commands) -->
-  <line x1="295" y1="150" x2="150" y2="93" stroke="#888" stroke-width="1.2" stroke-dasharray="5,3" marker-end="url(#arr2)"/>
-  <text x="158" y="135" font-family="Georgia,serif" font-size="10" fill="#666">CONNECTED / ALARM</text>
-
-  <!-- TCP SENSOR-2 → Server -->
-  <line x1="150" y1="208" x2="295" y2="175" stroke="#4a70c4" stroke-width="1.5" marker-end="url(#arr)"/>
-  <text x="192" y="205" font-family="Georgia,serif" font-size="11" fill="#4a70c4">TCP :6000</text>
-
-  <!-- TCP Server → SENSOR-2 -->
-  <line x1="295" y1="188" x2="150" y2="220" stroke="#888" stroke-width="1.2" stroke-dasharray="5,3" marker-end="url(#arr2)"/>
+  <!-- TCP: SENSOR-2 <-> Server -->
+  <line x1="155" y1="207" x2="290" y2="165" stroke="#4a70c4" stroke-width="1.5" marker-end="url(#a)"/>
+  <line x1="290" y1="178" x2="155" y2="220" stroke="#888" stroke-width="1.2" stroke-dasharray="5,3" marker-end="url(#b)"/>
+  <text x="208" y="200" font-family="Georgia,serif" font-size="11" fill="#4a70c4" font-weight="bold">TCP :6000</text>
 
   <!-- Browser -->
-  <rect x="620" y="55" width="140" height="52" rx="4" fill="#fff3e0" stroke="#e08000" stroke-width="1.5"/>
-  <text x="690" y="77" text-anchor="middle" font-family="Georgia,serif" font-size="13" font-weight="bold" fill="#1a1a1a">Browser</text>
-  <text x="690" y="95" text-anchor="middle" font-family="'Courier New',monospace" font-size="11" fill="#444">HTTP-klient</text>
+  <rect x="608" y="50" width="140" height="54" rx="4" fill="#fff3e0" stroke="#d07000" stroke-width="1.5"/>
+  <text x="678" y="72" text-anchor="middle" font-family="Georgia,serif" font-size="13" font-weight="bold">Browser</text>
+  <text x="678" y="90" text-anchor="middle" font-family="'Courier New',monospace" font-size="11" fill="#555">HTTP :8080</text>
 
-  <!-- HTTP Browser → Server -->
-  <line x1="620" y1="81" x2="485" y2="130" stroke="#e08000" stroke-width="1.5" marker-end="url(#arr)"/>
-  <text x="533" y="92" font-family="Georgia,serif" font-size="11" fill="#e08000">HTTP GET :8080</text>
+  <!-- HTTP: Browser <-> Server -->
+  <line x1="608" y1="78" x2="475" y2="120" stroke="#d07000" stroke-width="1.5" marker-end="url(#a)"/>
+  <line x1="475" y1="133" x2="608" y2="91" stroke="#888" stroke-width="1.2" stroke-dasharray="5,3" marker-end="url(#b)"/>
+  <text x="548" y="93" font-family="Georgia,serif" font-size="11" fill="#d07000" font-weight="bold">GET :8080</text>
+  <text x="538" y="140" font-family="Georgia,serif" font-size="10" fill="#666">JSON-svar</text>
 
-  <!-- HTTP Server → Browser (response) -->
-  <line x1="485" y1="145" x2="620" y2="96" stroke="#888" stroke-width="1.2" stroke-dasharray="5,3" marker-end="url(#arr2)"/>
-  <text x="520" y="140" font-family="Georgia,serif" font-size="10" fill="#666">200 OK + JSON</text>
-
-  <!-- UDP label on server -->
-  <text x="390" y="252" text-anchor="middle" font-family="Georgia,serif" font-size="10" fill="#c00">UDP internt: UdpAlarmSender &#8594; UdpAlarmReceiver (:7000)</text>
+  <!-- UDP (intern) label -->
+  <text x="382" y="248" text-anchor="middle" font-family="Georgia,serif" font-size="11" fill="#c00">UDP internt: port 7000 (UdpAlarmSender &#8594; UdpAlarmReceiver)</text>
 
   <!-- Legend -->
-  <line x1="10" y1="280" x2="45" y2="280" stroke="#4a70c4" stroke-width="1.5"/>
-  <text x="50" y="284" font-family="Georgia,serif" font-size="11" fill="#333">Klient initierer</text>
-  <line x1="170" y1="280" x2="205" y2="280" stroke="#888" stroke-width="1.2" stroke-dasharray="5,3"/>
-  <text x="210" y="284" font-family="Georgia,serif" font-size="11" fill="#333">Server initierer</text>
+  <line x1="10" y1="272" x2="44" y2="272" stroke="#4a70c4" stroke-width="1.5"/>
+  <text x="49" y="276" font-family="Georgia,serif" font-size="11">Klient initierer</text>
+  <line x1="180" y1="272" x2="214" y2="272" stroke="#888" stroke-width="1.2" stroke-dasharray="5,3"/>
+  <text x="219" y="276" font-family="Georgia,serif" font-size="11">Server initierer</text>
 </svg>
 </div>
 
 <table>
+  <tr><th>Protokol</th><th>Port</th><th>Form&#229;l</th></tr>
   <tr>
-    <th>Protokol</th>
-    <th>Port</th>
-    <th>Formål</th>
-    <th>Klasser</th>
+    <td>TCP</td><td>6000</td>
+    <td>Prim&#230;r dataudveksling &#8212; vejrm&#229;linger fra klient og kommandoer fra server</td>
   </tr>
   <tr>
-    <td>TCP</td>
-    <td>6000</td>
-    <td>Primær dataudveksling — vejrmålinger og serverkommandoer</td>
-    <td><code>WeatherServer</code>, <code>ClientHandler</code>, <code>WeatherClient</code></td>
+    <td>UDP</td><td>7000</td>
+    <td>Alarmnotifikation n&#229;r temperaturen overskrider gr&#230;nsev&#230;rdien</td>
   </tr>
   <tr>
-    <td>UDP</td>
-    <td>7000</td>
-    <td>Alarmnotifikationer ved høj temperatur</td>
-    <td><code>UdpAlarmSender</code>, <code>UdpAlarmReceiver</code></td>
-  </tr>
-  <tr>
-    <td>HTTP</td>
-    <td>8080</td>
-    <td>JSON-endpoint til dataindsigt i browser</td>
-    <td><code>HttpServer</code></td>
+    <td>HTTP</td><td>8080</td>
+    <td>JSON-endpoint der viser alle gemte m&#229;linger i en browser</td>
   </tr>
 </table>
 
 
-<!-- ============================================================ -->
-<h2>2. TCP-protokol &mdash; port 6000</h2>
+<!-- ======================================================= -->
+<h2>2. TCP-protokol &#8212; port 6000</h2>
+
+<p>
+  TCP anvendes til al prim&#230;r kommunikation mellem klient og server.
+  Protokollen er valgt fordi TCP garanterer, at pakker ankommer i korrekt r&#230;kkef&#248;lge og uden tab
+  &#8212; hvilket er afg&#248;rende for vejrdata, der gemmes kronologisk.
+  Forbindelsen er persistent og bruges i begge retninger: klienten sender m&#229;linger,
+  serveren sender kommandoer tilbage.
+</p>
 
 <h3>2.1 Kommunikationsflow</h3>
 
-<p>
-  Klienten forbinder til serveren via TCP. Serveren accepterer forbindelsen og sender straks en
-  velkomstbesked. Herefter sender klienten løbende vejrmålinger. Serveren sender en alarmkommando
-  tilbage over samme forbindelse, hvis temperaturen overskrider 35&nbsp;&deg;C.
-</p>
+<div class="diagram">
+<svg width="680" height="390" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arr" markerWidth="9" markerHeight="6" refX="8" refY="3" orient="auto">
+      <polygon points="0 0,9 3,0 6" fill="#333"/>
+    </marker>
+  </defs>
 
-<pre>
-  WeatherClient (SENSOR-1)              WeatherServer / ClientHandler
-          |                                         |
-          |------- TCP connect() :6000 ------------>|   (TCP-forbindelse etableres)
-          |                                         |
-          |<------ "CONNECTED:Server klar" ---------|   (server → klient)
-          |                                         |
-          |------- "SENSOR-1,34.21,62.08,174..." -->|   (klient → server)
-          |------- "SENSOR-1,33.80,65.44,174..." -->|
-          |------- "SENSOR-1,36.83,58.11,174..." -->|   (temp > 35°C)
-          |<------ "ALARM:Høj temperatur 36.83" ----|   (server → klient)
-          |------- "SENSOR-1,31.55,70.22,174..." -->|
-          |                  [...]                  |
-          |                                         |
-          |   (forbindelsen lukkes ved fejl/afslut) |
-</pre>
+  <!-- Lifeline headers -->
+  <rect x="30" y="14" width="160" height="40" rx="4" fill="#dce8fb" stroke="#4a70c4" stroke-width="1.5"/>
+  <text x="110" y="39" text-anchor="middle" font-family="Georgia,serif" font-size="13" font-weight="bold">WeatherClient</text>
 
-<div class="note">
-  Begge retninger er aktive over den samme TCP-forbindelse. Serveren initierer <code>CONNECTED</code>
-  og <code>ALARM</code>. Klienten initierer den løbende datastrøm. Dette opfylder kravet om tovejskommunikation.
+  <rect x="490" y="14" width="160" height="40" rx="4" fill="#e2f3e4" stroke="#388e3c" stroke-width="1.5"/>
+  <text x="570" y="30" text-anchor="middle" font-family="Georgia,serif" font-size="13" font-weight="bold">WeatherServer</text>
+  <text x="570" y="46" text-anchor="middle" font-family="Georgia,serif" font-size="11" fill="#555">ClientHandler</text>
+
+  <!-- Lifelines -->
+  <line x1="110" y1="54" x2="110" y2="380" stroke="#4a70c4" stroke-width="1" stroke-dasharray="6,4"/>
+  <line x1="570" y1="54" x2="570" y2="380" stroke="#388e3c" stroke-width="1" stroke-dasharray="6,4"/>
+
+  <!-- Activation boxes -->
+  <rect x="104" y="54" width="12" height="326" rx="1" fill="#b8d0f5" stroke="#4a70c4" stroke-width="0.8"/>
+  <rect x="564" y="100" width="12" height="280" rx="1" fill="#b5ddb8" stroke="#388e3c" stroke-width="0.8"/>
+
+  <!-- Arrow 1: TCP connect -->
+  <line x1="116" y1="100" x2="564" y2="100" stroke="#333" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="340" y="93" text-anchor="middle" font-family="Georgia,serif" font-size="12">TCP connect() &#8594; port 6000</text>
+
+  <!-- Arrow 2: CONNECTED -->
+  <line x1="564" y1="140" x2="116" y2="140" stroke="#333" stroke-width="1.5" stroke-dasharray="6,3" marker-end="url(#arr)"/>
+  <text x="340" y="133" text-anchor="middle" font-family="Georgia,serif" font-size="12" font-style="italic">CONNECTED:Server klar</text>
+
+  <!-- Arrow 3: WeatherData 1 -->
+  <line x1="116" y1="190" x2="564" y2="190" stroke="#333" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="340" y="183" text-anchor="middle" font-family="Georgia,serif" font-size="12">WeatherData m&#229;ling</text>
+
+  <!-- Arrow 4: WeatherData 2 -->
+  <line x1="116" y1="230" x2="564" y2="230" stroke="#333" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="340" y="223" text-anchor="middle" font-family="Georgia,serif" font-size="12">WeatherData m&#229;ling</text>
+
+  <!-- Arrow 5: WeatherData 3 (high temp) -->
+  <line x1="116" y1="278" x2="564" y2="278" stroke="#333" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="340" y="271" text-anchor="middle" font-family="Georgia,serif" font-size="12">WeatherData m&#229;ling  (temp &gt; 35&#176;C)</text>
+
+  <!-- Arrow 6: ALARM back -->
+  <line x1="564" y1="316" x2="116" y2="316" stroke="#c00" stroke-width="1.5" stroke-dasharray="6,3" marker-end="url(#arr)"/>
+  <text x="340" y="309" text-anchor="middle" font-family="Georgia,serif" font-size="12" fill="#c00" font-weight="bold">ALARM:H&#248;j temperatur 36.83</text>
+
+  <!-- Arrow 7: WeatherData 4 -->
+  <line x1="116" y1="360" x2="564" y2="360" stroke="#333" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="340" y="353" text-anchor="middle" font-family="Georgia,serif" font-size="12">WeatherData m&#229;ling</text>
+
+  <!-- Side labels -->
+  <text x="4" y="140" font-family="Georgia,serif" font-size="10" fill="#777">server</text>
+  <text x="4" y="153" font-family="Georgia,serif" font-size="10" fill="#777">initierer</text>
+  <text x="4" y="320" font-family="Georgia,serif" font-size="10" fill="#c00">server</text>
+  <text x="4" y="333" font-family="Georgia,serif" font-size="10" fill="#c00">initierer</text>
+</svg>
 </div>
 
-<h3>2.2 Pakkeformat &mdash; WeatherData (klient &rarr; server)</h3>
+<div class="note">
+  Begge retninger er aktive over &#233;n og samme TCP-forbindelse. Serveren initierer
+  <strong>CONNECTED</strong> og <strong>ALARM</strong>. Klienten initierer den l&#248;bende datastr&#248;m.
+</div>
+
+<h3>2.2 Pakkeformat &#8212; WeatherData (klient &#8594; server)</h3>
 
 <p>
-  Hver måling sendes som én linje tekst i UTF-8, afsluttet med linjeskift (<code>\n</code>).
-  Felter er separeret med komma. Linjen parses af serveren med <code>WeatherData.fromMessage()</code>.
+  Hver m&#229;ling sendes som &#233;n tekstlinje i UTF-8, afsluttet med linjeskift.
+  De fire felter er separeret med komma.
 </p>
 
-<pre>
-FORMAT:   SENSOR-ID,TEMPERATUR,LUFTFUGTIGHED,TIMESTAMP
-
-EKSEMPEL: SENSOR-1,34.21748392,62.0837140,1748412345678
-</pre>
+<div class="packet">
+  <div class="packet-field">
+    <div class="fname">SENSOR-ID</div>
+    <div class="ftype">String</div>
+    <div class="fval">SENSOR-1</div>
+  </div>
+  <div class="packet-field">
+    <div class="fname">TEMPERATUR</div>
+    <div class="ftype">double (&#176;C)</div>
+    <div class="fval">34.217</div>
+  </div>
+  <div class="packet-field">
+    <div class="fname">LUFTFUGTIGHED</div>
+    <div class="ftype">double (%)</div>
+    <div class="fval">62.083</div>
+  </div>
+  <div class="packet-field">
+    <div class="fname">TIMESTAMP</div>
+    <div class="ftype">long (ms)</div>
+    <div class="fval">1748412345678</div>
+  </div>
+</div>
 
 <table>
-  <tr>
-    <th>Felt</th>
-    <th>Java-type</th>
-    <th>Eksempelværdi</th>
-    <th>Beskrivelse</th>
-  </tr>
+  <tr><th>Felt</th><th>V&#230;rdiomr&#229;de</th><th>Beskrivelse</th></tr>
   <tr>
     <td><code>SENSOR-ID</code></td>
-    <td><code>String</code></td>
-    <td><code>SENSOR-1</code></td>
+    <td>Tekststreng</td>
     <td>Unik identifikator for den afsendende sensor</td>
   </tr>
   <tr>
     <td><code>TEMPERATUR</code></td>
-    <td><code>double</code></td>
-    <td><code>34.217</code></td>
-    <td>Temperatur i &deg;C &mdash; simuleret mellem 30 og 45&nbsp;&deg;C</td>
+    <td>30,0 &#8211; 45,0 &#176;C (simuleret)</td>
+    <td>M&#229;lt temperatur i grader Celsius</td>
   </tr>
   <tr>
     <td><code>LUFTFUGTIGHED</code></td>
-    <td><code>double</code></td>
-    <td><code>62.083</code></td>
-    <td>Relativ luftfugtighed i procent &mdash; simuleret 40&ndash;80&nbsp;%</td>
+    <td>40,0 &#8211; 80,0 % (simuleret)</td>
+    <td>Relativ luftfugtighed i procent</td>
   </tr>
   <tr>
     <td><code>TIMESTAMP</code></td>
-    <td><code>long</code></td>
-    <td><code>1748412345678</code></td>
-    <td>Tidsstempel i millisekunder siden Unix-epoke (<code>System.currentTimeMillis()</code>)</td>
+    <td>Unix-tid i ms</td>
+    <td>Tidspunkt for m&#229;lingen p&#229; klientens ur</td>
   </tr>
 </table>
 
-<h3>2.3 Pakkeformat &mdash; serverkommandoer (server &rarr; klient)</h3>
+<h3>2.3 Pakkeformat &#8212; serverkommandoer (server &#8594; klient)</h3>
 
 <p>
-  Serveren sender kommandoer til klienten som én linje tekst med formatet <code>TYPE:BESKED</code>,
-  afsluttet med linjeskift.
+  Serveren sender kommandoer som tekstlinjer med formatet
+  <code>TYPE:BESKED</code>, afsluttet med linjeskift.
 </p>
 
 <table>
+  <tr><th>Kommando</th><th>Eksempel</th><th>Hvorn&#229;r</th></tr>
   <tr>
-    <th>Kommandotype</th>
-    <th>Format</th>
-    <th>Eksempel</th>
-    <th>Hvornår</th>
-  </tr>
-  <tr>
-    <td><code>CONNECTED</code></td>
     <td><code>CONNECTED:&lt;besked&gt;</code></td>
     <td><code>CONNECTED:Server klar</code></td>
-    <td>Straks n&aring;r TCP-forbindelsen accepteres</td>
+    <td>Straks n&#229;r TCP-forbindelsen accepteres</td>
   </tr>
   <tr>
-    <td><code>ALARM</code></td>
     <td><code>ALARM:&lt;besked&gt;</code></td>
-    <td><code>ALARM:Høj temperatur 36.83</code></td>
-    <td>N&aring;r modtaget temperatur overskrider 35,0&nbsp;&deg;C</td>
+    <td><code>ALARM:H&#248;j temperatur 36.83</code></td>
+    <td>N&#229;r modtaget temperatur overskrider 35,0&#160;&#176;C</td>
   </tr>
 </table>
 
-<h3>2.4 Tr&aring;dhåndtering</h3>
+<h3>2.4 Tr&#229;dhåndtering</h3>
 
 <p>
-  Serveren accepterer klientforbindelser i en l&oslash;kke i <code>WeatherServer.start()</code>.
-  For hver ny klient startes en dedikeret tråd med <code>ClientHandler</code> som <code>Runnable</code>:
+  Serveren accepterer klientforbindelser i en l&#248;bende l&#248;kke og starter en ny tr&#229;d
+  for hver klient. Tr&#229;den h&#229;ndterer al kommunikation med sin klient og k&#248;rer
+  uafh&#230;ngigt af de &#248;vrige klienttr&#229;de.
 </p>
-
-<pre>
-  // WeatherServer.start()
-  while (true) {
-      Socket clientSocket = serverSocket.accept();   // blokerer til klient forbinder
-      new Thread(new ClientHandler(clientSocket, storage)).start();
-  }
-</pre>
 
 <p>
-  Klienten (<code>WeatherClient</code>) implementerer ligeledes <code>Runnable</code>. Dens <code>run()</code>-metode
-  sender vejrdata i en l&oslash;kke. Parallelt startes en daemon-tråd (<code>listenerThread</code>), der l&aelig;ser
-  indgående serverkommandoer fra samme socket-forbindelse:
+  Klienten k&#248;rer to tr&#229;de over &#233;n forbindelse: &#233;n der sender vejrdata i en l&#248;kke,
+  og &#233;n daemon-tr&#229;d der lytter p&#229; serverkommandoer. Daemon-tr&#229;den afsluttes
+  automatisk, n&#229;r JVM lukker.
 </p>
 
-<pre>
-  // WeatherClient.run()
-  Thread listenerThread = new Thread(() -> listenForCommands(reader));
-  listenerThread.setDaemon(true);   // afsluttes automatisk n&aring;r JVM lukker
-  listenerThread.start();
 
-  while (true) {
-      writer.println(data.toMessage());   // send vejrdata
-      Thread.sleep(SEND_INTERVAL_MS);
-  }
-</pre>
+<!-- ======================================================= -->
+<h2>3. UDP-protokol &#8212; port 7000</h2>
 
-<div class="note">
-  Daemon-tråde afsluttes automatisk, n&aring;r alle non-daemon-tråde er stoppet. Det sikrer,
-  at listener-tråden ikke forhindrer programmet i at afslutte.
-</div>
-
-
-<!-- ============================================================ -->
-<h2>3. UDP-protokol &mdash; port 7000</h2>
+<p>
+  UDP anvendes til alarmbeskeder, n&#229;r en sensor rapporterer temperatur over 35&#160;&#176;C.
+  Protokollen er valgt fordi alarmbeskeder er korte og tidskritiske, og fordi
+  UDP&#8217;s forbindelsesfriehed g&#248;r det muligt at sende til mange modtagere uden
+  at etablere individuelle forbindelser. En enkelt tabt pakke er ikke kritisk,
+  da n&#230;ste m&#229;ling vil generere en ny alarm.
+</p>
 
 <h3>3.1 Kommunikationsflow</h3>
 
+<div class="diagram">
+<svg width="680" height="220" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arr3" markerWidth="9" markerHeight="6" refX="8" refY="3" orient="auto">
+      <polygon points="0 0,9 3,0 6" fill="#c00"/>
+    </marker>
+  </defs>
+
+  <!-- Headers -->
+  <rect x="30" y="14" width="160" height="40" rx="4" fill="#e2f3e4" stroke="#388e3c" stroke-width="1.5"/>
+  <text x="110" y="30" text-anchor="middle" font-family="Georgia,serif" font-size="13" font-weight="bold">ClientHandler</text>
+  <text x="110" y="46" text-anchor="middle" font-family="Georgia,serif" font-size="11" fill="#555">UdpAlarmSender</text>
+
+  <rect x="490" y="14" width="160" height="40" rx="4" fill="#fde8e8" stroke="#c00" stroke-width="1.5"/>
+  <text x="570" y="30" text-anchor="middle" font-family="Georgia,serif" font-size="13" font-weight="bold">UdpAlarm</text>
+  <text x="570" y="46" text-anchor="middle" font-family="Georgia,serif" font-size="13" font-weight="bold">Receiver</text>
+
+  <!-- Lifelines -->
+  <line x1="110" y1="54" x2="110" y2="210" stroke="#388e3c" stroke-width="1" stroke-dasharray="6,4"/>
+  <line x1="570" y1="54" x2="570" y2="210" stroke="#c00" stroke-width="1" stroke-dasharray="6,4"/>
+
+  <!-- Activation -->
+  <rect x="104" y="80" width="12" height="80" rx="1" fill="#b5ddb8" stroke="#388e3c" stroke-width="0.8"/>
+  <rect x="564" y="80" width="12" height="80" rx="1" fill="#f5b8b8" stroke="#c00" stroke-width="0.8"/>
+
+  <!-- Note before arrow -->
+  <text x="110" y="98" text-anchor="middle" font-family="Georgia,serif" font-size="11" fill="#777">(temp &gt; 35&#176;C)</text>
+
+  <!-- UDP arrow -->
+  <line x1="116" y1="130" x2="564" y2="130" stroke="#c00" stroke-width="2" marker-end="url(#arr3)"/>
+  <text x="340" y="118" text-anchor="middle" font-family="Georgia,serif" font-size="13" fill="#c00" font-weight="bold">UDP DatagramPacket &#8594; :7000</text>
+  <text x="340" y="148" text-anchor="middle" font-family="Georgia,serif" font-size="11" fill="#555">&#8220;ALARM! H&#248;j temperatur: 36.83&#176;C fra SENSOR-1&#8221;</text>
+
+  <!-- Receiver prints -->
+  <text x="640" y="175" font-family="Georgia,serif" font-size="11" fill="#777">logger alarm</text>
+</svg>
+</div>
+
+<h3>3.2 Pakkeformat</h3>
+
 <p>
-  N&aring;r <code>ClientHandler</code> modtager en vejrmåling med temperatur over 35&nbsp;&deg;C,
-  sender <code>UdpAlarmSender</code> en <code>DatagramPacket</code> til port 7000.
-  <code>UdpAlarmReceiver</code> k&oslash;rer som daemon-tråd på serveren og l&aelig;ser fra samme port.
+  UDP-pakken indeholder en enkelt tekststreng kodet i UTF-8.
+  Der er ingen feltseparering &#8212; hele beskeden er en fritekststreng.
+  Modtagerbufferen er sat til 1024&#160;bytes.
 </p>
 
-<pre>
-  ClientHandler                      UdpAlarmReceiver (port 7000)
-        |                                     |
-        |   (temp > 35.0°C modtaget)          |
-        |                                     |
-        |-- DatagramPacket → UDP :7000 ------->|
-        |   "ALARM! Høj temperatur: 36.83°C   |
-        |    fra SENSOR-1"                    |
-        |                                     |  *** ALARM MODTAGET: ... ***
-</pre>
-
-<h3>3.2 Pakkeformat &mdash; UDP alarm</h3>
-
-<p>
-  UDP-pakken indeholder en enkelt fritekst-streng kodet i UTF-8.
-  Modtagerbufferen er sat til 1024 bytes, hvilket er mere end tilstrækkeligt for en alarmbesked.
-</p>
-
-<table>
-  <tr>
-    <th>Felt</th>
-    <th>Type</th>
-    <th>Maks. st&oslash;rrelse</th>
-    <th>Eksempel</th>
-  </tr>
-  <tr>
-    <td>Alarmbesked</td>
-    <td>UTF-8 tekst</td>
-    <td>1024 bytes</td>
-    <td><code>ALARM! Høj temperatur: 36.83°C fra SENSOR-1</code></td>
-  </tr>
-</table>
-
-<div class="note">
-  <strong>Valg af UDP:</strong> UDP er forbindelsesfri og garanterer ikke levering eller r&aelig;kkef&oslash;lge.
-  Det er bevidst valgt her fordi alarmbeskeder er korte og hurtige, og fordi en enkelt tabt pakke ikke
-  er kritisk &mdash; n&aelig;ste måling vil generere en ny alarm. UDP demonstrerer samtidig et klart
-  alternativ til TCP i samme system.
+<div class="packet">
+  <div class="packet-field" style="flex: 3;">
+    <div class="fname">ALARMBESKED (UTF-8 tekst, max 1024 bytes)</div>
+    <div class="ftype">String</div>
+    <div class="fval">ALARM! H&#248;j temperatur: 36.83&#176;C fra SENSOR-1</div>
+  </div>
 </div>
 
 
-<!-- ============================================================ -->
-<h2>4. HTTP-protokol &mdash; port 8080</h2>
+<!-- ======================================================= -->
+<h2>4. HTTP-protokol &#8212; port 8080</h2>
+
+<p>
+  HTTP-serveren er implementeret direkte p&#229; rå TCP-sockets uden biblioteker.
+  Den l&#230;ser og kasserer HTTP-request-headerne, og svarer med et JSON-array
+  over alle gemte vejrm&#229;linger. Form&#229;let er at g&#248;re data tilg&#230;ngeligt i en browser.
+</p>
 
 <h3>4.1 Kommunikationsflow</h3>
 
+<div class="diagram">
+<svg width="680" height="260" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arr4" markerWidth="9" markerHeight="6" refX="8" refY="3" orient="auto">
+      <polygon points="0 0,9 3,0 6" fill="#333"/>
+    </marker>
+  </defs>
+
+  <!-- Headers -->
+  <rect x="30" y="14" width="160" height="40" rx="4" fill="#fff3e0" stroke="#d07000" stroke-width="1.5"/>
+  <text x="110" y="39" text-anchor="middle" font-family="Georgia,serif" font-size="13" font-weight="bold">Browser</text>
+
+  <rect x="490" y="14" width="160" height="40" rx="4" fill="#e2f3e4" stroke="#388e3c" stroke-width="1.5"/>
+  <text x="570" y="39" text-anchor="middle" font-family="Georgia,serif" font-size="13" font-weight="bold">HttpServer</text>
+
+  <!-- Lifelines -->
+  <line x1="110" y1="54" x2="110" y2="250" stroke="#d07000" stroke-width="1" stroke-dasharray="6,4"/>
+  <line x1="570" y1="54" x2="570" y2="250" stroke="#388e3c" stroke-width="1" stroke-dasharray="6,4"/>
+
+  <!-- Activation -->
+  <rect x="104" y="54" width="12" height="196" rx="1" fill="#ffe0a0" stroke="#d07000" stroke-width="0.8"/>
+  <rect x="564" y="100" width="12" height="110" rx="1" fill="#b5ddb8" stroke="#388e3c" stroke-width="0.8"/>
+
+  <!-- Arrow 1: GET request -->
+  <line x1="116" y1="110" x2="564" y2="110" stroke="#333" stroke-width="1.5" marker-end="url(#arr4)"/>
+  <text x="340" y="103" text-anchor="middle" font-family="Georgia,serif" font-size="12" font-weight="bold">GET / HTTP/1.1</text>
+  <text x="340" y="125" text-anchor="middle" font-family="Georgia,serif" font-size="11" fill="#666">Host: localhost:8080  [headers]  [blank linje]</text>
+
+  <!-- Processing note -->
+  <text x="650" y="165" font-family="Georgia,serif" font-size="11" fill="#777">l&#230;ser</text>
+  <text x="650" y="178" font-family="Georgia,serif" font-size="11" fill="#777">request,</text>
+  <text x="650" y="191" font-family="Georgia,serif" font-size="11" fill="#777">bygger</text>
+  <text x="650" y="204" font-family="Georgia,serif" font-size="11" fill="#777">JSON</text>
+
+  <!-- Arrow 2: 200 OK + JSON -->
+  <line x1="564" y1="215" x2="116" y2="215" stroke="#333" stroke-width="1.5" stroke-dasharray="6,3" marker-end="url(#arr4)"/>
+  <text x="340" y="208" text-anchor="middle" font-family="Georgia,serif" font-size="12" font-weight="bold">HTTP/1.1 200 OK  +  JSON-array</text>
+</svg>
+</div>
+
+<h3>4.2 Responseformat (JSON)</h3>
+
 <p>
-  <code>HttpServer</code> er implementeret direkte på <code>ServerSocket</code> uden biblioteker.
-  Den l&aelig;ser og kasserer HTTP-request-linjerne, og svarer med et JSON-array over alle gemte vejrmålinger.
+  Svaret er et JSON-array med &#233;t objekt per gemt vejrm&#229;ling,
+  i den r&#230;kkef&#248;lge de er modtaget fra klienterne.
 </p>
-
-<pre>
-  Browser / HTTP-klient                     HttpServer (port 8080)
-          |                                         |
-          |--- "GET / HTTP/1.1\r\n" -------------->|
-          |    "Host: localhost:8080\r\n"           |
-          |    "\r\n"  (tom linje = header-slut)    |
-          |                                         |  (l&aelig;ser request, bygger JSON)
-          |<--- "HTTP/1.1 200 OK\r\n" --------------|
-          |     "Content-Type: application/json\r\n"|
-          |     "Connection: close\r\n"             |
-          |     "\r\n"                              |
-          |<--- [JSON-array]                        |
-          |                                         |  (socket lukkes)
-</pre>
-
-<h3>4.2 Response-format (JSON)</h3>
-
-<p>
-  Svaret er et JSON-array. Hvert element repr&aelig;senterer én gemt vejrmåling i den r&aelig;kkef&oslash;lge,
-  de er modtaget:
-</p>
-
-<pre>
-[
-  {
-    "sensor":      "SENSOR-1",
-    "temperature": 34.217483921,
-    "humidity":    62.083714,
-    "timestamp":   1748412345678
-  },
-  {
-    "sensor":      "SENSOR-2",
-    "temperature": 38.912,
-    "humidity":    55.321,
-    "timestamp":   1748412346123
-  }
-]
-</pre>
 
 <table>
+  <tr><th>JSON-felt</th><th>Type</th><th>Eksempelv&#230;rdi</th><th>Beskrivelse</th></tr>
   <tr>
-    <th>JSON-felt</th>
-    <th>Java-kilde</th>
-    <th>Type</th>
-    <th>Beskrivelse</th>
-  </tr>
-  <tr>
-    <td><code>sensor</code></td>
-    <td><code>WeatherData.getSensorId()</code></td>
-    <td>String</td>
+    <td><code>sensor</code></td><td>String</td><td><code>"SENSOR-1"</code></td>
     <td>Sensor-ID fra den afsendende klient</td>
   </tr>
   <tr>
-    <td><code>temperature</code></td>
-    <td><code>WeatherData.getTemperature()</code></td>
-    <td>number (double)</td>
-    <td>Temperatur i &deg;C</td>
+    <td><code>temperature</code></td><td>number</td><td><code>34.217</code></td>
+    <td>Temperatur i &#176;C</td>
   </tr>
   <tr>
-    <td><code>humidity</code></td>
-    <td><code>WeatherData.getHumidity()</code></td>
-    <td>number (double)</td>
+    <td><code>humidity</code></td><td>number</td><td><code>62.083</code></td>
     <td>Luftfugtighed i procent</td>
   </tr>
   <tr>
-    <td><code>timestamp</code></td>
-    <td><code>WeatherData.getTimestamp()</code></td>
-    <td>number (long)</td>
+    <td><code>timestamp</code></td><td>number</td><td><code>1748412345678</code></td>
     <td>Unix-tidsstempel i millisekunder</td>
   </tr>
 </table>
 
 
-<!-- ============================================================ -->
-<h2>5. Trådsikkerhed &mdash; ReadWriteLock</h2>
+<!-- ======================================================= -->
+<h2>5. Tr&#229;dsikkerhed &#8212; ReadWriteLock</h2>
 
 <p>
-  Flere tråde tilgår <code>WeatherStorage</code> simultant: &eacute;n <code>ClientHandler</code>-tråd per
-  klient (skriver) og <code>HttpServer</code>-tråden (l&aelig;ser). For at undgå race conditions anvendes
-  <code>ReentrantReadWriteLock</code>.
+  Flere tr&#229;de tilg&#229;r <code>WeatherStorage</code> samtidig: &#233;n <code>ClientHandler</code>-tr&#229;d
+  per sensor skriver nye m&#229;linger, mens <code>HttpServer</code>-tr&#229;den l&#230;ser for at bygge JSON-svaret.
+  Uden synkronisering kan dette medf&#248;re race conditions, hvor data l&#230;ses halvt opdateret.
 </p>
 
-<h3>5.1 Lock-strategi</h3>
+<p>
+  <code>ReentrantReadWriteLock</code> l&#248;ser dette ved at skelne mellem l&#230;se- og skriveadgang:
+  mange tr&#229;de m&#229; l&#230;se samtidig, men kun &#233;n tr&#229;d m&#229; skrive ad gangen &#8212; og kun n&#229;r
+  ingen l&#230;ser.
+</p>
 
 <table>
+  <tr><th>Operation</th><th>Lås-type</th><th>Adf&#230;rd</th></tr>
   <tr>
-    <th>Metode</th>
-    <th>Lås-type</th>
-    <th>Adf&aelig;rd</th>
-  </tr>
-  <tr>
-    <td><code>save(WeatherData)</code></td>
+    <td>Gem ny m&#229;ling</td>
     <td>Write lock</td>
-    <td>Kun &eacute;n tråd kan skrive ad gangen. Alle l&aelig;sende tråde blokeres midlertidigt.</td>
+    <td>Kun &#233;n tr&#229;d kan skrive. Alle l&#230;sende tr&#229;de blokeres midlertidigt.</td>
   </tr>
   <tr>
-    <td><code>getAll()</code></td>
+    <td>Hent alle m&#229;linger</td>
     <td>Read lock</td>
-    <td>Flere tråde kan l&aelig;se samtidig, s&aring; l&aelig;nge ingen holder write lock.</td>
+    <td>Flere tr&#229;de kan l&#230;se samtidig, s&#229; l&#230;nge ingen holder write lock.</td>
   </tr>
   <tr>
-    <td><code>getLatest()</code></td>
+    <td>Hent seneste m&#229;ling</td>
     <td>Read lock</td>
-    <td>Samme princip som <code>getAll()</code>.</td>
+    <td>Samme princip som ovenfor.</td>
   </tr>
 </table>
 
-<h3>5.2 Impl&aelig;mentation</h3>
+<p>
+  L&#229;sen frigives altid i en <code>finally</code>-blok, s&#229; den frigives selv hvis der
+  opst&#229;r en undtagelse under operationen.
+</p>
 
-<p>Låsen frigives altid i en <code>finally</code>-blok for at garantere frigivelse selv ved undtagelser:</p>
-
-<pre>
-  // Skrivning (ClientHandler-tråd)
-  lock.writeLock().lock();
-  try {
-      dataList.add(data);
-      // skriv til fil ...
-  } finally {
-      lock.writeLock().unlock();   // frigives altid
-  }
-
-  // L&aelig;sning (HttpServer-tråd)
-  lock.readLock().lock();
-  try {
-      return new ArrayList&lt;&gt;(dataList);   // returnerer kopi
-  } finally {
-      lock.readLock().unlock();
-  }
-</pre>
-
-<div class="note">
-  <code>getAll()</code> returnerer en ny <code>ArrayList</code>-kopi i stedet for direkte reference.
-  Det sikrer, at kalderen ikke kan &aelig;ndre den interne liste uden for låsen.
-</div>
-
-<h3>5.3 Tråd-overblik</h3>
+<h3>5.1 Tr&#229;d-overblik</h3>
 
 <table>
+  <tr><th>Tr&#229;d</th><th>Type</th><th>Ansvar</th></tr>
   <tr>
-    <th>Tråd</th>
-    <th>Klasse</th>
-    <th>Type</th>
-    <th>Ansvar</th>
+    <td>TCP-accept (WeatherServer)</td><td>Non-daemon</td>
+    <td>Accepterer indg&#229;ende klientforbindelser i en l&#248;kke</td>
   </tr>
   <tr>
-    <td>Main</td>
-    <td><code>ServerMain</code></td>
-    <td>Non-daemon</td>
-    <td>Starter serveren og de to daemon-tråde</td>
+    <td>ClientHandler (&#215;n)</td><td>Non-daemon</td>
+    <td>&#201;n tr&#229;d per klient &#8212; l&#230;ser data og sender kommandoer</td>
   </tr>
   <tr>
-    <td>TCP-accept</td>
-    <td><code>WeatherServer</code></td>
-    <td>Non-daemon</td>
-    <td>Accepterer indgående TCP-klientforbindelser i l&oslash;kke</td>
+    <td>UDP-modtager</td><td>Daemon</td>
+    <td>Lytter p&#229; UDP port 7000 og logger alarmer</td>
   </tr>
   <tr>
-    <td>ClientHandler (×n)</td>
-    <td><code>ClientHandler</code></td>
-    <td>Non-daemon</td>
-    <td>&eacute;n tråd per klient &mdash; l&aelig;ser data, sender kommandoer</td>
+    <td>HTTP-server</td><td>Daemon</td>
+    <td>Accepterer HTTP-forbindelser p&#229; port 8080</td>
   </tr>
   <tr>
-    <td>UDP-modtager</td>
-    <td><code>UdpAlarmReceiver</code></td>
-    <td>Daemon</td>
-    <td>L&aelig;ser indgående UDP-alarmpakker på port 7000</td>
+    <td>Klient-sender</td><td>Non-daemon</td>
+    <td>Sender vejrm&#229;linger til serveren hvert sekund</td>
   </tr>
   <tr>
-    <td>HTTP-server</td>
-    <td><code>HttpServer</code></td>
-    <td>Daemon</td>
-    <td>Accepterer HTTP-forbindelser på port 8080</td>
-  </tr>
-  <tr>
-    <td>HTTP-handler (×n)</td>
-    <td>anonym lambda</td>
-    <td>Non-daemon</td>
-    <td>&eacute;n tråd per HTTP-request</td>
-  </tr>
-  <tr>
-    <td>Klient sender</td>
-    <td><code>WeatherClient.run()</code></td>
-    <td>Non-daemon</td>
-    <td>Sender vejrm&aring;linger hvert sekund</td>
-  </tr>
-  <tr>
-    <td>Klient listener</td>
-    <td><code>listenerThread</code></td>
-    <td>Daemon</td>
-    <td>L&aelig;ser serverkommandoer (CONNECTED, ALARM)</td>
+    <td>Klient-listener</td><td>Daemon</td>
+    <td>L&#230;ser serverkommandoer (CONNECTED, ALARM) fra samme socket</td>
   </tr>
 </table>
 
