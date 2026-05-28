@@ -12,7 +12,7 @@ public class ClientHandler implements Runnable {
     private final Socket clientSocket;
     private final WeatherStorage storage;
     private final UdpAlarmSender alarmSender;
-    private PrintWriter writer; // bruges til at sende kommandoer til klient
+    private PrintWriter writer;
 
     private static final double MAX_TEMP = 35.0;
 
@@ -20,14 +20,6 @@ public class ClientHandler implements Runnable {
         this.clientSocket = clientSocket;
         this.storage      = storage;
         this.alarmSender  = new UdpAlarmSender("localhost", 7000);
-    }
-
-    // Server sender kommando til denne klient
-    public void sendCommand(String command) {
-        if (writer != null) {
-            writer.println(command);
-            System.out.println("Kommando sendt til klient: " + command);
-        }
     }
 
     @Override
@@ -52,16 +44,10 @@ public class ClientHandler implements Runnable {
                 storage.save(data);
                 System.out.println("Gemt: " + data);
 
-                // Send alarm til klient hvis temperatur er for høj
                 if (data.getTemperature() > MAX_TEMP) {
                     writer.println("ALARM:Høj temperatur " + data.getTemperature());
                     alarmSender.sendAlarm("ALARM! Høj temperatur: "
                             + data.getTemperature() + "°C fra " + data.getSensorId());
-                }
-
-                // Server beder om status hver 10. måling
-                if (storage.getAll().size() % 10 == 0) {
-                    writer.println("STATUS:Send systemstatus");
                 }
             }
 

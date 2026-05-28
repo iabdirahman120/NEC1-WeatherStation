@@ -2,6 +2,8 @@ package server;
 
 import shared.WeatherData;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -34,7 +36,12 @@ public class HttpServer implements Runnable {
     }
 
     private void handleRequest(Socket client) {
-        try (PrintWriter writer = new PrintWriter(client.getOutputStream(), true)) {
+        try (
+                BufferedReader reader = new BufferedReader(new InputStreamReader(client.getInputStream()));
+                PrintWriter writer = new PrintWriter(client.getOutputStream(), true)
+        ) {
+            // Læs og kassér HTTP request-linjer (header slutter ved blank linje)
+            while (!reader.readLine().isEmpty()) { }
 
             // Byg JSON svar med alle målinger
             StringBuilder json = new StringBuilder("[");
@@ -60,6 +67,8 @@ public class HttpServer implements Runnable {
 
         } catch (Exception e) {
             System.out.println("HTTP request fejl: " + e.getMessage());
+        } finally {
+            try { client.close(); } catch (Exception ignored) {}
         }
     }
 }
