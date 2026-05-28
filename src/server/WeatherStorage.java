@@ -51,14 +51,4 @@ public class WeatherStorage {
         }
     }
 
-    // Hent seneste måling
-    public WeatherData getLatest() {
-        lock.readLock().lock();
-        try {
-            if (dataList.isEmpty()) return null;
-            return dataList.get(dataList.size() - 1);
-        } finally {
-            lock.readLock().unlock();
-        }
-    }
 }
